@@ -1,0 +1,70 @@
+start =
+    wordlist
+
+wordlist =
+    first:word rest:spacedword*
+        { return [first].concat(rest);}  
+    
+word =
+	first:[a-z] rest:[a-z]*
+    	{ return first + rest.join(""); }
+        
+spacedword =
+    first:[ ] w:word
+    	{return w; }
+    	
+    	
+    	
+start =
+    expression
+
+expression =
+    atom
+    / list
+
+validchar
+    = [0-9a-zA-Z_?!+\-=@#$%^&*/.]
+
+atom =
+    chars:validchar+
+        { return chars.join(""); }
+        
+list =
+    [(] first:expression rest:spacedexpression* [)]
+        { return [first].concat(rest); }    
+
+spacedexpression = 
+    first:[ ] a:expression
+        { return a; }
+        
+        
+        
+        
+        
+start =
+    commative
+
+commative =
+    left:additive "," right:commative
+    	{ return { tag:",", left:left, right:right}; }
+  / additive
+
+additive =
+    left:multiplicative "+" right:additive
+        { return {tag: "+", left:left, right:right}; }
+  / multiplicative
+
+multiplicative =
+    left:primary "*" right:multiplicative
+        { return {tag: "*", left:left, right:right}; }
+  / primary
+
+
+primary =
+    integer
+  / "(" additive:additive ")"
+      { return additive; }
+
+integer =
+    digits:[0-9]+
+        { return parseInt(digits.join(""), 10); }
