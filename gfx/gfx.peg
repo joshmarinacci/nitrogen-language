@@ -1,0 +1,80 @@
+
+
+
+start = 
+    class+
+
+class = 
+    cl:classtype _+ name:identifier classdef:classdef
+    { return {
+         classtype:cl,
+         name:name,
+         classdef:classdef,
+      };
+    }
+    
+classtype = 
+    "value"
+    
+identifier =
+    chars:[a-zA-Z0-9]+
+        { return chars.join(""); }
+
+_ =
+    [ \t\n]
+    
+classdef =
+    _* '{' _* props:propdefs meths:methdefs _* '}' _*
+    { return { declarations: props, methods:meths }; }
+    
+propdefs =
+    propdef*
+
+propdef =
+    realprop
+    /fakeprop
+    
+realprop = 
+    _* type:type _* id:identifier _* '=' _* value:value _* ';'
+    { return { type:type, name:id, kind:"concrete", defaultvalue:value }; }
+    
+fakeprop =
+    _* 'get' _* type:type _* id:identifier _* '{' _* exp:expression _* '};'
+    { return { type:type, name:id, kind:"synthetic", expression:exp }; }
+    
+    
+methdefs =
+    methdef*
+    
+methdef =
+    _* rettype:identifier _* id:identifier '(' params:paramdefs ')' _* '{' body:methbody _* '}' _*
+    { return { rettype:rettype, name:id, params:params, body:body } }
+    
+    
+paramdefs =
+    paramdef*
+    
+paramdef =
+    _* type:identifier _* id:identifier ','?
+    { return { id:id, type:type } }
+    
+methbody =
+    statements
+
+statements =
+    statement*
+
+statement = 
+    _* st:[^;{}]+ ';' _*
+    { return {text:st.join("")}}
+    
+type =
+   'int'
+
+value =
+   chars:[a-zA-Z0-9]+
+   { return chars.join(""); }
+
+
+expression = 
+   identifier '+' identifier

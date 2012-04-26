@@ -1,0 +1,48 @@
+value Bounds { 
+    int x = 0; int y = 0; int w = 0; int h = 0; 
+    get int x2 {x+w}; 
+    get int y2 { y+h}; 
+    Bounds translate(int x, int y) {
+        return new Bounds(this.x+x,this.y+y,this.w,this.h);
+    }
+    boolean contains(int x, int y) {
+        if(x < this.x) return false;
+        if(x > this.x+this.w) return false;
+        if(y < this.y) return false;
+        if(y > this.y + this.h) return false;
+        return true;
+    }
+    Bounds add(Insets padding) {
+        int x = this.x - padding.getLeft();
+        int y = this.y - padding.getTop();
+        int w = this.w + padding.getLeft() + padding.getRight();
+        int h = this.h + padding.getTop() + padding.getBottom();
+        return new Bounds(x,y,w,h);
+    }
+    Bounds normalize() {
+        int tx = x;
+        int tw = w;
+        if(x < 0) tx = 0;
+        int ty = y;
+        int th = h;
+        if(y < 0) ty = 0;
+        Bounds norm = new Bounds(tx, ty, tw, th);
+        return norm;
+    }
+    Bounds intersect(Bounds bounds) {
+        int nx = this.x;
+        int ny = this.y;
+        int nw = this.w;
+        int nh = this.h;
+
+        if(bounds.x > this.x)   nx = bounds.x;
+        if(bounds.y > this.y)   ny = bounds.y;
+        if(bounds.getX2() < this.getX2()) nw = bounds.getX2() - nx;
+        if(bounds.getY2() < this.getY2()) nh = bounds.getY2() - ny;
+
+        return new Bounds(nx,ny,nw,nh);
+    }
+    
+    
+}
+value Insets { int left = 0; int right = 0; int top = 0; int bottom = 0; }
