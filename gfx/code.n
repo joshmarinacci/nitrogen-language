@@ -1,7 +1,7 @@
 value Bounds { 
     int x = 0; int y = 0; int w = 0; int h = 0; 
-    get int x2 {x+w}; 
-    get int y2 { y+h}; 
+    get int x2 { this.x+this.w }; 
+    get int y2 { this.y+this.h }; 
     Bounds translate(int x, int y) {
         return new Bounds(this.x+x,this.y+y,this.w,this.h);
     }
@@ -26,8 +26,7 @@ value Bounds {
         int ty = y;
         int th = h;
         if(y < 0) ty = 0;
-        Bounds norm = new Bounds(tx, ty, tw, th);
-        return norm;
+        return new Bounds(tx, ty, tw, th);
     }
     Bounds intersect(Bounds bounds) {
         int nx = this.x;

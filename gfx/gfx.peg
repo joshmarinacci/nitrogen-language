@@ -86,4 +86,4 @@ value =
 
 
 expression = 
-   identifier '+' identifier
+   [a-zA-Z0-9.+]+
