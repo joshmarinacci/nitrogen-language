@@ -1,6 +1,30 @@
 /*
 scratch
 
+
+normalize() = derive(  x:max(x,0)  y:max(y,0) )
+
+expands to
+public Bounds normalize() {
+    return new Bounds(
+        Math.max(this.x,0)
+        Math.max(this.y,0)
+        this.w,
+        this.h)
+}
+
+intersect(Bounds b) {
+    int nx = max(b.x,x);
+    int ny = max(b.y,y);
+    int nw = if(b.x2<x2) b.x2-nx else w;
+    int nh = if(b.y2<y2) b.y2-ny else h;
+    return this.derive(
+        x:nx
+        y:ny
+        w:nw
+        h:nh
+    )
+}
 */
 
 
@@ -34,7 +58,12 @@ var code = fs.readFileSync(codepath,'utf-8');
 console.log(code);
 //var cd2 = "value Bounds { int x = 0; int y = 0; int w = 0; int h = 0; get int x2 {x+w}; }";
 //console.log("code = " + cd2+"-");
-var ast = parse(code);
+var ast;
+try {
+    ast = parse(code);
+} catch (e) {
+    console.log(e);
+}
 console.log(ast);
 
 var outfile = basedir+'microgui/Bounds.java';
@@ -122,7 +151,45 @@ function genJava(ast) {
             pr("  }");
         }
 
+        
+        //the builder
+        pr("  public static "+ast.name+".Builder getBuilder() { return new "+ast.name+".Builder(); }");
+        pr("  public static class Builder {");
+        for(var i in ast.classdef.declarations) {
+            var dec = ast.classdef.declarations[i];
+            if(dec.kind=="synthetic") continue;
+            p("    private " + dec.type + " ");
+                pr(dec.name + " = " + dec.defaultvalue + ";");
+            pr("    public Builder set"+capitalize(dec.name)+"("+dec.type + " " + dec.name +") {");
+            pr("       this."+dec.name+" = " + dec.name + ";");
+            pr("       return this;");
+            pr("    }");
+        }
+        pr("    "+ast.name+" build() {");
+        p("        return new "+ast.name+"(");
+        for(var i in ast.classdef.declarations) {
+            var dec = ast.classdef.declarations[i];
+            if(dec.kind=="synthetic") continue;
+            if(i!=0) p(", ");
+            p(dec.name);
+        }
+        pr(");");
+        pr("    }");
+        pr("  }");
         p("}");
+        closeClass();
+    }
+    if(ast.classtype == "enum") {
+        console.log("doing an enum");
+        openClass(ast.name);
+        pr("public enum " + ast.name + " {");
+        for(var i in ast.values) {
+            if(i!=0) pr(", ");
+            p("    "+ast.values[i]);
+        }
+        pr("");
+        
+        pr("}");
         closeClass();
     }
 }

@@ -45,4 +45,22 @@ value Bounds {
     
     
 }
+
 value Insets { int left = 0; int right = 0; int top = 0; int bottom = 0; }
+
+value MouseState {
+    int x = 0;
+    int y = 0;
+    int deltaX = 0;
+    int deltaY = 0;
+    long holdTime = 0;
+    boolean pressed = false;
+    boolean released = false;
+    Node dragNode = null;
+    Node pressedWidget = null;
+}
+
+enum StateAction { RESTART, HOLD, NEXT, }
+
+
+

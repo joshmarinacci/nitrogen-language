@@ -1,9 +1,10 @@
-
-
-
 start = 
-    class+
+    classlike+
 
+classlike =
+    class
+    /enum
+    
 class = 
     cl:classtype _+ name:identifier classdef:classdef
     { return {
@@ -15,6 +16,14 @@ class =
     
 classtype = 
     "value"
+    
+enum =
+    _* "enum" _* name:identifier _* '{' _* values:enumvalue+ _* '}' _*
+    { return { classtype:"enum", name:name, values:values};}
+    
+enumvalue =
+    _*  id:identifier _* ',' _*
+    { return id; }
     
 identifier =
     chars:[a-zA-Z0-9]+
@@ -69,7 +78,7 @@ statement =
     { return {text:st.join("")}}
     
 type =
-   'int'
+   identifier
 
 value =
    chars:[a-zA-Z0-9]+
