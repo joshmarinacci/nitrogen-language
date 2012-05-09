@@ -17,6 +17,15 @@ function generate(cls) {
     out.flush();
 }
 
+function finish(ast) {
+    pr("module.exports = {");
+    for(var c in ast) {
+        pr("   " + ast[c].name + ":" + ast[c].name + ",");
+    }
+    
+    pr("};");
+}
+
 function genClass(cls) {
     pr("function " + cls.name + "() {");
     var decs = cls.classdef.declarations.filter(function(d) { return d.kind == "concrete"; });
@@ -65,4 +74,5 @@ function pr(s) { out.write(s+"\n"); }
 
 module.exports.generate = generate;
 module.exports.setOutFile = setOutFile;
+module.exports.finish = finish;
 

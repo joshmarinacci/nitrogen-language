@@ -33,3 +33,5 @@ for(var c in ast) {
     genJS.generate(ast[c]);
 }
 
+genJS.finish(ast);
+
