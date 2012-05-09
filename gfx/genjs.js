@@ -27,10 +27,20 @@ function finish(ast) {
 }
 
 function genClass(cls) {
-    pr("function " + cls.name + "() {");
     var decs = cls.classdef.declarations.filter(function(d) { return d.kind == "concrete"; });
+
+    p("function " + cls.name + "(");
     for(var i in decs) {
-        pr("    this."+decs[i].name+" = " + decs[i].defaultvalue+";");
+        if(i==0) {
+            p(decs[i].name);
+        } else {
+            p(", " + decs[i].name);
+        }
+        
+    }
+    pr(") {");
+    for(var i in decs) {
+        pr("    this."+decs[i].name+" = " + decs[i].name+";");
     }
     
     var syndecs = cls.classdef.declarations.filter(function(d) {
@@ -53,7 +63,12 @@ function genClass(cls) {
         }
         pr("){");
         for(var j in m.body) {
-            pr("        " + m.body[j].text+";");
+            var line = m.body[j].text;
+            if(/^int\s/.exec(line)) {
+                var parts = /^int\s(\w+)(.+)/.exec(line);
+                line = "var " + parts[1] + " " + parts[2];
+            }
+            pr("        " + line+";");
         }
         
         pr("    }");
@@ -67,6 +82,7 @@ function genClass(cls) {
 
 
 function genEnum(cls) {
+    pr("function " + cls.name+"(){}");
 }
 
 function p(s)  { out.write(s); }
